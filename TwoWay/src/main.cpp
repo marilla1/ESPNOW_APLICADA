@@ -1,25 +1,37 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <esp_wifi.h>
 #include <Arduino.h>
 #include "FS.h"
 #include <WiFiClientSecure.h>
+#include <LiquidCrystal_I2C.h> //lcd
+
 
 // REPLACE WITH THE MAC Address of your receiver
 //revisar
 uint8_t broadcastAddress[] = {0xc8, 0x2e, 0x18 , 0x8f, 0x00, 0xf4};
 
+//definiendo funciones
+void validacion(float distancia);
+void pantalla(float distancia, String msj);
+
+
+//definicion de pin de led
+
+const int led = 2;
+
+//config de pantalla lcd
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+
 // Structure to send and receive data
 typedef struct struct_message {
-  int id;
-  int x;
-  int y;
-  float dist;
+  int id; // must be unique for each sender board
+    // int x;
+    // int y;
+  float distance;
+  int porcentaje;
 } struct_message;
 
 // Create instances of struct_message
@@ -43,13 +55,18 @@ void OnDataRecv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incoming
   Serial.println(len);
   Serial.print("ID: ");
   Serial.println(myDataRec.id);
-  Serial.print("X: ");
-  Serial.println(myDataRec.x);
-  Serial.print("Y: ");
-  Serial.println(myDataRec.y);
+
+  // Serial.print("X: ");
+  // Serial.println(myDataRec.x);
+  // Serial.print("Y: ");
+  // Serial.println(myDataRec.y);
+
   Serial.print("Distance: ");
-  Serial.println(myDataRec.dist);
+  Serial.println(myDataRec.distance);
   Serial.println();
+  Serial.print("Porcentaje del Tanque: ");
+  Serial.print(myDataRec.porcentaje);
+
 }
 
 void setup() {
@@ -65,6 +82,13 @@ void setup() {
     return;
   }
 
+  //config de pin del led
+  pinMode(led, OUTPUT);
+
+  //config pantalla lcd
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
   // Register callback for sending data
   /*
   esp_now_register_send_cb(OnDataSent);
@@ -103,8 +127,60 @@ void loop() {
     Serial.println("Error sending the data");
   }
   */
+
+  validacion(myDataRec.distance);
   
-  delay(2000);
+  delay(500);
 }
 
+
+
+/////////////////////VALIDACION, PARA EL CASO EN QUE EL TANQUE ESTE LLENO, QUE SE DEBERA HACER//////////
+
+void validacion(float distancia){
+
+  if(distancia > 5){
+    pantalla(distancia, "Llenando");
+    digitalWrite(led, HIGH);
+    
+  }
+  else{
+    pantalla(distancia, "Llenado Detenido");
+    digitalWrite(led, LOW);
+
+
+
+  }
+
+
+}
+
+
+void pantalla(float distancia, String msj){
+  if (distancia > 5) {
+
+    // digitalWrite(ledPin, LOW);  // Enciende el LED 1 cuando la distancia es mayor a 150 cm
+    lcd.print(distancia);
+    lcd.print(" cm");
+    lcd.setCursor(0,1); // column#4 and Row #1 
+    lcd.print(msj);
+    delay(500);
+    lcd.clear();
+  } 
+  else {
+
+    //digitalWrite(ledPin, HIGH);   // Apaga el LED 1
+    
+    lcd.print(distancia);
+    lcd.print(" cm");
+    lcd.setCursor(1,1); // column#4 and Row #1 
+    lcd.print("Detener Llenado");
+    
+    delay(500);
+    lcd.clear();
+
+
+
+  }
+}
 

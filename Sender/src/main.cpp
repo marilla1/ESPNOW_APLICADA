@@ -7,6 +7,13 @@
 #include <Wire.h>
 #include <esp_now.h>
 
+
+
+float getDistance();
+
+int percent(float dist);
+
+
 // REPLACE WITH THE RECEIVER'S MAC Address
 //MAC Servidor>> c8:2e:18:f0:01:f0
 uint8_t broadcastAddress[] = {0xc8, 0x2e, 0x18, 0xf0, 0x01, 0xf0};
@@ -17,16 +24,17 @@ const int trigPin = 13;
 const int echoPin = 12;
 const double soundSpeed = 0.034;
 const int dataTxTimeInterval = 500; //ms
-long dist;
+//float dist;
 
 
 // Structure example to send data
 // Must match the receiver structure
 typedef struct struct_message {
     int id; // must be unique for each sender board
-    int x;
-    int y;
-    float distance = 10.0;
+    // int x;
+    // int y;
+    float distance;
+    int porcentaje;
 } struct_message;
 
 // Create a struct_message called myData
@@ -49,6 +57,8 @@ void setup() {
   WiFi.mode(WIFI_STA);
 
   //Configuracion de pines del ultrasonico
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 
@@ -77,8 +87,13 @@ void setup() {
 void loop() {
   // Set values to send
   myData.id = 1;
-  myData.x = random(0,50);
-  myData.y = random(0,50);
+
+  myData.distance = getDistance();
+
+  myData.porcentaje = percent(myData.distance);
+
+  // myData.x = random(0,50);
+  // myData.y = random(0,50);
 
   // Send message via ESP-NOW
   Serial.println(myData.id);
@@ -90,5 +105,46 @@ void loop() {
   else {
     Serial.println("Error sending the data");
   }
-  delay(10000);
+  delay(500);
+}
+
+
+int percent(float dist){
+  int porcentaje = ((40 - dist)/(40-5)) * 100;
+
+
+  if(porcentaje > 100){
+    return 100;
+  }
+  else if(porcentaje < 0)
+  {
+    return 0;
+  }
+  else{
+    return porcentaje;
+  }
+  
+}
+
+float getDistance(){
+
+  float duration, distance;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+
+  distance = duration * soundSpeed/2;
+
+  distance = distance > 350 ? 200 : distance;
+
+
+
+  return distance;
 }
