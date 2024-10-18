@@ -8,7 +8,7 @@
 #include <esp_now.h>
 
 // REPLACE WITH THE RECEIVER'S MAC Address
-//MAC Servidor> c8:2e:18:f0:01:f0
+//MAC Servidor>> c8:2e:18:f0:01:f0
 uint8_t broadcastAddress[] = {0xc8, 0x2e, 0x18, 0xf0, 0x01, 0xf0};
 
 

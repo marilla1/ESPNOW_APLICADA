@@ -1,20 +1,11 @@
-/*
-  Rui Santos & Sara Santos - Random Nerd Tutorials
-  Complete project details at https://RandomNerdTutorials.com/get-change-esp32-esp8266-mac-address-arduino/
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.  
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-#ifdef ESP32
-  #include <WiFi.h>
-  #include <esp_wifi.h>
-  #include <Arduino.h>
-  #include "FS.h"
-  #include <WiFiClientSecure.h>
-  #include <Wire.h>
-  #include <esp_now.h>
-#else
-  #include <ESP8266WiFi.h>
-#endif
+
+#include <WiFi.h>
+#include <esp_wifi.h>
+#include <Arduino.h>
+#include <WiFiClientSecure.h>
+#include <Wire.h>
+#include <esp_now.h>
+#include "FS.h" 
 
 void setup(){
   Serial.begin(115200);
