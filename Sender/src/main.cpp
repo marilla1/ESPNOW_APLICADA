@@ -8,8 +8,16 @@
 #include <esp_now.h>
 
 // REPLACE WITH THE RECEIVER'S MAC Address
-//c8:2e:18:8f:00:f4 
-uint8_t broadcastAddress[] = {0xcc, 0xdb, 0xa7, 0x34, 0xdf, 0xf4};
+//MAC Servidor> c8:2e:18:f0:01:f0
+uint8_t broadcastAddress[] = {0xc8, 0x2e, 0x18, 0xf0, 0x01, 0xf0};
+
+
+//Definicion de pines del sensor ultrasonico
+const int trigPin = 13;
+const int echoPin = 12;
+const double soundSpeed = 0.034;
+const int dataTxTimeInterval = 500; //ms
+long dist;
 
 
 // Structure example to send data
@@ -18,6 +26,7 @@ typedef struct struct_message {
     int id; // must be unique for each sender board
     int x;
     int y;
+    float distance = 10.0;
 } struct_message;
 
 // Create a struct_message called myData
@@ -38,6 +47,10 @@ void setup() {
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
+
+  //Configuracion de pines del ultrasonico
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
