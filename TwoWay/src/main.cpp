@@ -6,6 +6,7 @@
 #include "FS.h"
 #include <WiFiClientSecure.h>
 #include <LiquidCrystal_I2C.h> //lcd
+#include <Adafruit_GFX.h>
 
 
 // REPLACE WITH THE MAC Address of your receiver
@@ -19,7 +20,7 @@ void pantalla(float distancia, String msj);
 
 //definicion de pin de led
 
-const int led = 2;
+const int led = 4;
 
 //config de pantalla lcd
 LiquidCrystal_I2C lcd(0x27,16,2);
@@ -66,6 +67,7 @@ void OnDataRecv(const esp_now_recv_info_t *esp_now_info, const uint8_t *incoming
   Serial.println();
   Serial.print("Porcentaje del Tanque: ");
   Serial.print(myDataRec.porcentaje);
+  Serial.print("\n");
 
 }
 
@@ -127,8 +129,8 @@ void loop() {
     Serial.println("Error sending the data");
   }
   */
-
-  validacion(myDataRec.distance);
+ Serial.print(myDataRec.distance);
+ validacion(myDataRec.distance);
   
   delay(500);
 }
@@ -148,8 +150,6 @@ void validacion(float distancia){
     pantalla(distancia, "Llenado Detenido");
     digitalWrite(led, LOW);
 
-
-
   }
 
 
@@ -164,7 +164,7 @@ void pantalla(float distancia, String msj){
     lcd.print(" cm");
     lcd.setCursor(0,1); // column#4 and Row #1 
     lcd.print(msj);
-    delay(500);
+    delay(1000);
     lcd.clear();
   } 
   else {
@@ -176,7 +176,7 @@ void pantalla(float distancia, String msj){
     lcd.setCursor(1,1); // column#4 and Row #1 
     lcd.print("Detener Llenado");
     
-    delay(500);
+    delay(1000);
     lcd.clear();
 
 
