@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"name": "ESPNOW",
+			"path": ".."
+		},
+		{
+			"name": "Receiver",
+			"path": "../../../Receiver"
+		},
+		{
+			"name": "Sender",
+			"path": "../../../Sender"
+		}
+	],
+	"settings": {}
+}
